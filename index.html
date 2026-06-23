@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel CRM - Lead Capture</title>
+    <title>Travel CRM Lead Capture</title>
     
-    <!-- Load Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Load Phosphor Icons for modern, clean UI icons -->
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Flatpickr CSS for Modern Calendars -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
         }
-        
-        /* Custom Scrollbar for better aesthetics */
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -45,7 +48,6 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
-        
         .toast-enter {
             animation: slideInUp 0.3s ease-out forwards;
         }
@@ -63,14 +65,38 @@
             display: block;
             opacity: 1;
         }
+
+        /* Overriding Flatpickr styles to match Tailwind theme */
+        .flatpickr-calendar {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            padding: 10px !important;
+            box-sizing: content-box !important; /* Fixes right-edge cutoff issue caused by Tailwind's global sizing */
+            font-family: 'Inter', sans-serif;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+        }
+        
+        /* Hide days from previous and next months for a cleaner grid */
+        .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+            visibility: hidden !important;
+        }
+        
+        /* Fade out past disabled days nicely */
+        .flatpickr-day.flatpickr-disabled {
+            color: #cbd5e1 !important;
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased h-screen flex overflow-hidden">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300 hidden md:flex z-20 shadow-xl">
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300 hidden md:flex z-20 shadow-xl shrink-0">
         <!-- Logo Area -->
-        <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950 shrink-0">
             <i class="ph ph-airplane-tilt text-blue-500 text-2xl mr-3"></i>
             <span class="text-white font-bold text-lg tracking-wide">AeroLeads CRM</span>
         </div>
@@ -79,19 +105,19 @@
         <nav class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
             <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Lead Management</p>
             
-            <button onclick="switchTab('new-leads')" id="nav-new-leads" class="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white">
+            <button onclick="switchTab('new-leads')" id="nav-new-leads" class="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white shadow">
                 <i class="ph ph-user-plus text-lg mr-3"></i>
                 New Leads
             </button>
             
-            <button onclick="switchTab('bonus-queue')" id="nav-bonus-queue" class="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-slate-800 hover:text-white">
+            <button onclick="switchTab('bonus-queue')" id="nav-bonus-queue" class="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-slate-800 hover:text-white text-slate-300">
                 <i class="ph ph-users-three text-lg mr-3"></i>
                 Bonus Queue (BQ)
             </button>
         </nav>
 
         <!-- User Profile Area (Mockup) -->
-        <div class="p-4 border-t border-slate-800 bg-slate-900">
+        <div class="p-4 border-t border-slate-800 bg-slate-900 shrink-0">
             <div class="flex items-center">
                 <img src="https://placehold.co/40x40/3b82f6/ffffff?text=AG" alt="Agent" class="h-9 w-9 rounded-full mr-3 border border-slate-700">
                 <div>
@@ -106,7 +132,7 @@
     <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
         
         <!-- Mobile Header (Visible only on small screens) -->
-        <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-10">
+        <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-10 shrink-0">
             <div class="flex items-center">
                 <i class="ph ph-airplane-tilt text-blue-600 text-xl mr-2"></i>
                 <span class="font-bold text-slate-800">AeroLeads</span>
@@ -122,12 +148,13 @@
             
             <!-- TAB 1: New Leads -->
             <div id="tab-new-leads" class="tab-content active h-full">
+                <!-- Header and form layout container -->
                 <div class="mb-6 flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
                     <div>
                         <h1 class="text-2xl font-bold text-slate-900">Capture New Lead</h1>
                         <p class="text-slate-500 text-sm mt-1">Enter flight inquiry details to generate a formatted CRM note.</p>
                     </div>
-                    <button onclick="startNewLead()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg flex items-center transition-colors shadow-sm whitespace-nowrap">
+                    <button onclick="startNewLead()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg flex items-center transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm whitespace-nowrap">
                         <i class="ph ph-plus-circle text-lg mr-2"></i> New Lead
                     </button>
                 </div>
@@ -138,166 +165,437 @@
                     <!-- LEFT COLUMN: Input Form -->
                     <div class="lg:col-span-7 xl:col-span-6 flex flex-col h-full">
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:p-6 flex-1 flex flex-col overflow-y-auto">
-                            <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-4 flex items-center">
+                            <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-4 flex items-center shrink-0">
                                 <i class="ph ph-list-dashes text-blue-500 mr-2"></i> Lead Details
                             </h2>
                             
-                            <form id="lead-form" class="space-y-5 flex-1">
-                                <!-- Personal Info Section -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="name" class="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="ph ph-user text-slate-400"></i>
-                                            </div>
-                                            <input type="text" id="name" placeholder="John Doe" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="phone" class="block text-xs font-medium text-slate-700 mb-1">Phone Number</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="ph ph-phone text-slate-400"></i>
-                                            </div>
-                                            <input type="tel" id="phone" placeholder="+1 (555) 000-0000" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <form id="lead-form" class="space-y-6 flex-1">
+                                
+                                <!-- SECTION 1: Client Identity -->
                                 <div>
-                                    <label for="email" class="block text-xs font-medium text-slate-700 mb-1">Email Address</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class="ph ph-envelope-simple text-slate-400"></i>
-                                        </div>
-                                        <input type="email" id="email" placeholder="john.doe@example.com" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
-                                    </div>
-                                </div>
-
-                                <div class="w-full border-t border-slate-100 my-1"></div>
-
-                                <!-- Itinerary Section -->
-                                <div class="flex space-x-5 mb-1">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" id="trip-oneway" name="trip-type" value="One-way" class="text-blue-600 focus:ring-blue-500 w-4 h-4">
-                                        <span class="ml-2 text-sm font-medium text-slate-700">One-way</span>
-                                    </label>
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" id="trip-round" name="trip-type" value="Round-trip" class="text-blue-600 focus:ring-blue-500 w-4 h-4" checked>
-                                        <span class="ml-2 text-sm font-medium text-slate-700">Round-trip</span>
-                                    </label>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="departure" class="block text-xs font-medium text-slate-700 mb-1">Departure Airport</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="ph ph-airplane-takeoff text-slate-400"></i>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">1. Client Identity</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        
+                                        <!-- Full Name Field with Military Spelling Assist -->
+                                        <div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <label for="name" class="block text-xs font-medium text-slate-700">Full Name</label>
+                                                <div class="relative group">
+                                                    <button type="button" class="text-slate-400 hover:text-blue-500 flex items-center focus:outline-none">
+                                                        <i class="ph ph-question text-sm"></i>
+                                                        <span class="text-[10px] ml-0.5 font-medium underline">Phonetics</span>
+                                                    </button>
+                                                    <div class="absolute right-0 bottom-6 hidden group-hover:block w-64 bg-slate-900 text-white text-xs p-3 rounded-lg shadow-xl border border-slate-700 z-50">
+                                                        <p class="font-bold border-b border-slate-700 pb-1 mb-1.5 flex items-center">
+                                                            <i class="ph ph-microphone text-blue-400 mr-1.5"></i> NATO Phonetic Spelling:
+                                                        </p>
+                                                        <div id="name-phonetic" class="font-mono text-slate-300 leading-normal whitespace-pre-wrap max-h-36 overflow-y-auto">
+                                                            Start typing a name...
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <input type="text" id="departure" placeholder="e.g. JFK" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm uppercase transition-colors" autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label for="arrival" class="block text-xs font-medium text-slate-700 mb-1">Arrival Airport</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="ph ph-airplane-landing text-slate-400"></i>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="ph ph-user text-slate-400"></i>
+                                                </div>
+                                                <input type="text" id="name" placeholder="Client Name" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
                                             </div>
-                                            <input type="text" id="arrival" placeholder="e.g. LHR" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm uppercase transition-colors" autocomplete="off">
+                                        </div>
+                                        
+                                        <!-- Phone -->
+                                        <div>
+                                            <label for="phone" class="block text-xs font-medium text-slate-700 mb-1">Phone Number</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="ph ph-phone text-slate-400"></i>
+                                                </div>
+                                                <input type="tel" id="phone" placeholder="+1 (555) 000-0000" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Email Address Field with Military Spelling Assist -->
+                                        <div class="md:col-span-2">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <label for="email" class="block text-xs font-medium text-slate-700">Email Address</label>
+                                                <div class="relative group">
+                                                    <button type="button" class="text-slate-400 hover:text-blue-500 flex items-center focus:outline-none">
+                                                        <i class="ph ph-question text-sm"></i>
+                                                        <span class="text-[10px] ml-0.5 font-medium underline">Phonetics</span>
+                                                    </button>
+                                                    <div class="absolute right-0 bottom-6 hidden group-hover:block w-72 bg-slate-900 text-white text-xs p-3 rounded-lg shadow-xl border border-slate-700 z-50">
+                                                        <p class="font-bold border-b border-slate-700 pb-1 mb-1.5 flex items-center">
+                                                            <i class="ph ph-microphone text-blue-400 mr-1.5"></i> NATO Phonetic Spelling:
+                                                        </p>
+                                                        <div id="email-phonetic" class="font-mono text-slate-300 leading-normal whitespace-pre-wrap max-h-36 overflow-y-auto">
+                                                            Start typing an email...
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="ph ph-envelope-simple text-slate-400"></i>
+                                                </div>
+                                                <input type="email" id="email" placeholder="client@example.com" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="depart-date" class="block text-xs font-medium text-slate-700 mb-1">Departure Date</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="ph ph-calendar-blank text-slate-400"></i>
-                                            </div>
-                                            <input type="date" id="depart-date" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors text-slate-700">
-                                        </div>
-                                    </div>
+                                <div class="w-full border-t border-slate-100"></div>
 
-                                    <div id="return-date-container">
-                                        <label for="return-date" class="block text-xs font-medium text-slate-700 mb-1">Return Date</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="ph ph-calendar-check text-slate-400"></i>
-                                            </div>
-                                            <input type="date" id="return-date" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors text-slate-700">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="w-full border-t border-slate-100 my-1"></div>
-
-                                <!-- Passengers & Class -->
-                                <div class="grid grid-cols-3 gap-3">
-                                    <div>
-                                        <label for="pax-adults" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Adults (12+)</label>
-                                        <input type="number" id="pax-adults" min="1" value="1" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
-                                    </div>
-                                    <div>
-                                        <label for="pax-children" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Child (2-11)</label>
-                                        <input type="number" id="pax-children" min="0" value="0" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
-                                    </div>
-                                    <div>
-                                        <label for="pax-infants" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Infant (0-2)</label>
-                                        <input type="number" id="pax-infants" min="0" value="0" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="cabin-class" class="block text-xs font-medium text-slate-700 mb-1">Cabin Class</label>
-                                        <select id="cabin-class" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white cursor-pointer">
-                                            <option value="Economy">Economy</option>
-                                            <option value="Premium Economy">Premium Economy</option>
-                                            <option value="Business">Business</option>
+                                <!-- SECTION 2: Cabin & Passengers -->
+                                <div>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">2. Cabin & Passengers</h3>
+                                    
+                                    <div class="mb-4">
+                                        <label for="cabin-class" class="block text-xs font-medium text-slate-700 mb-1">Premium Cabin Selection</label>
+                                        <select id="cabin-class" class="block w-full px-3 py-2 border-2 border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-blue-50/30 text-blue-900 font-medium cursor-pointer transition-all">
+                                            <option value="Business">Business Class (Default)</option>
                                             <option value="First Class">First Class</option>
+                                            <option value="Premium Economy">Premium Economy</option>
+                                            <option value="Economy">Economy</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label for="stops" class="block text-xs font-medium text-slate-700 mb-1">Stops Preferred</label>
-                                        <select id="stops" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white cursor-pointer">
-                                            <option value="Any Routing">Any Routing (Cheapest)</option>
-                                            <option value="Non-stop">Non-stop</option>
-                                            <option value="1 Stop">1 Stop</option>
-                                            <option value="2 Stops">2 Stops</option>
-                                        </select>
-                                    </div>
-                                </div>
 
-                                <!-- Advanced Routing / Layover Toggle -->
-                                <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <i class="ph ph-map-pin text-blue-500 mr-2 text-lg"></i>
-                                            <span class="text-sm font-medium text-slate-700">Add Preferred Layover?</span>
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                                            <label for="pax-adults" class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 text-center">Adults (12+)</label>
+                                            <input type="number" id="pax-adults" min="1" value="1" class="block w-full px-2 py-1.5 border border-slate-300 rounded text-center focus:ring-2 focus:ring-blue-500 sm:text-sm transition-colors">
                                         </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" id="layover-toggle" class="sr-only peer">
-                                            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-                                    
-                                    <div id="layover-container" class="hidden mt-3 pt-3 border-t border-slate-200">
-                                        <label for="layover-airport" class="block text-xs font-medium text-slate-600 mb-1">Preferred Layover Airport(s)</label>
-                                        <input type="text" id="layover-airport" placeholder="e.g. DXB, DOH, CDG..." class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors uppercase">
+                                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                                            <label for="pax-children" class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 text-center">Child (2-11)</label>
+                                            <input type="number" id="pax-children" min="0" value="0" class="block w-full px-2 py-1.5 border border-slate-300 rounded text-center focus:ring-2 focus:ring-blue-500 sm:text-sm transition-colors">
+                                        </div>
+                                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                                            <label for="pax-infants" class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 text-center">Infant (0-2)</label>
+                                            <input type="number" id="pax-infants" min="0" value="0" class="block w-full px-2 py-1.5 border border-slate-300 rounded text-center focus:ring-2 focus:ring-blue-500 sm:text-sm transition-colors">
+                                        </div>
                                     </div>
                                 </div>
 
+                                <div class="w-full border-t border-slate-100"></div>
+
+                                <!-- SECTION 3: Itinerary & Scheduling -->
                                 <div>
-                                    <label for="notes" class="block text-xs font-medium text-slate-700 mb-1">Additional Notes (Optional)</label>
-                                    <textarea id="notes" rows="2" placeholder="Specific airlines, baggage needs, wheelchair assistance..." class="block w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors resize-none"></textarea>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                                        <span>3. Core Itinerary & Scheduling</span>
+                                        <div class="flex space-x-4 bg-slate-100 p-1 rounded-md">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="radio" id="trip-oneway" name="trip-type" value="One-way" class="text-blue-600 focus:ring-blue-500 w-3.5 h-3.5">
+                                                <span class="ml-1.5 text-xs font-medium text-slate-700">One-way</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="radio" id="trip-round" name="trip-type" value="Round-trip" class="text-blue-600 focus:ring-blue-500 w-3.5 h-3.5" checked>
+                                                <span class="ml-1.5 text-xs font-medium text-slate-700">Round-trip</span>
+                                            </label>
+                                        </div>
+                                    </h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label for="departure" class="block text-xs font-medium text-slate-700 mb-1">Departure Airport</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="ph ph-airplane-takeoff text-slate-400"></i>
+                                                </div>
+                                                <input type="text" id="departure" placeholder="e.g. JFK, LHR" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm uppercase transition-colors" autocomplete="off">
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label for="arrival" class="block text-xs font-medium text-slate-700 mb-1">Arrival Airport</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="ph ph-airplane-landing text-slate-400"></i>
+                                                </div>
+                                                <input type="text" id="arrival" placeholder="e.g. DXB, SIN" class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm uppercase transition-colors" autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modernized Date Inputs Grid (Flatpickr) -->
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                        
+                                        <!-- Modern Styled Departure Date -->
+                                        <div>
+                                            <label for="depart-date" class="block text-xs font-medium text-slate-700 mb-1">Departure Date</label>
+                                            <div class="relative border border-slate-300 rounded-lg hover:border-slate-400 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all bg-white overflow-hidden shadow-sm">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                                    <i class="ph ph-calendar-blank text-blue-600"></i>
+                                                </div>
+                                                <input type="text" id="depart-date" placeholder="DD-MM-YYYY" class="block w-full pl-9 pr-3 py-2 bg-transparent text-slate-700 sm:text-sm focus:outline-none relative z-20 cursor-pointer">
+                                            </div>
+                                        </div>
+
+                                        <!-- Modern Styled Return Date -->
+                                        <div id="return-date-container">
+                                            <label for="return-date" class="block text-xs font-medium text-slate-700 mb-1">Return Date</label>
+                                            <div class="relative border border-slate-300 rounded-lg hover:border-slate-400 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all bg-white overflow-hidden shadow-sm">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                                    <i class="ph ph-calendar-check text-blue-600"></i>
+                                                </div>
+                                                <input type="text" id="return-date" placeholder="DD-MM-YYYY" class="block w-full pl-9 pr-3 py-2 bg-transparent text-slate-700 sm:text-sm focus:outline-none relative z-20 cursor-pointer">
+                                            </div>
+                                        </div>
+
+                                        <!-- Modern Styled Date Flexibility -->
+                                        <div>
+                                            <label for="date-flexibility" class="block text-xs font-medium text-slate-700 mb-1">Date Flexibility</label>
+                                            <select id="date-flexibility" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white cursor-pointer transition-colors shadow-sm">
+                                                <option value="Exact Dates Only">Exact Dates Only</option>
+                                                <option value="+/- 1 Day">+/- 1 Day</option>
+                                                <option value="+/- 2 Days">+/- 2 Days</option>
+                                                <option value="+/- 3 Days">+/- 3 Days</option>
+                                                <option value="Very Flexible (1 Week+)">Very Flexible (1 Week+)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- dynamic computed flexible date ranges widget -->
+                                    <div id="flexible-days-output" class="hidden mb-4 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
+                                        <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wide mb-1.5 flex items-center">
+                                            <i class="ph ph-calendar text-xs mr-1"></i> Active Calendar Search Windows
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div id="flex-dep-window" class="text-xs text-slate-600 flex flex-wrap items-center gap-1.5">
+                                                <!-- Dynamic Date Tags -->
+                                            </div>
+                                            <div id="flex-ret-window" class="text-xs text-slate-600 flex flex-wrap items-center gap-1.5 hidden">
+                                                <!-- Dynamic Date Tags -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Layover Preferences moved here -->
+                                    <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <i class="ph ph-map-pin text-blue-500 mr-2 text-lg"></i>
+                                                <span class="text-sm font-medium text-slate-700">Specific Layover Preferences?</span>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" id="layover-toggle" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="layover-container" class="hidden mt-3 pt-3 border-t border-slate-200">
+                                            <label for="layover-airport" class="block text-xs font-medium text-slate-600 mb-1">Preferred Connecting City / Airport Code(s)</label>
+                                            <input type="text" id="layover-airport" placeholder="e.g. DXB, DOH, LHR, FRA (comma separated)" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors uppercase">
+                                            <p class="text-[10px] text-slate-500 mt-1">Enter multiple codes separated by commas.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full border-t border-slate-100"></div>
+
+                                <!-- SECTION 4: Routing Preferences -->
+                                <div>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">4. Routing Preferences</h3>
+                                    
+                                    <div class="mb-2">
+                                        <label class="block text-xs font-medium text-slate-700 mb-2">Number of Stops <span class="text-red-500">*</span></label>
+                                        <div class="flex flex-wrap items-center gap-3">
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-flexible" name="stops" value="Flexible" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer" checked>
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">Flexible</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-nonstop" name="stops" value="Non-stop" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">Non-stop</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-1" name="stops" value="1 Stop" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">1 Stop</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-2" name="stops" value="2 Stops" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">2 Stops</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-3" name="stops" value="3 Stops" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">3 Stops</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full border-t border-slate-100"></div>
+
+                                <!-- SECTION 5: Add-ons & Cross-sell -->
+                                <div>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">5. Cross-sell & Ancillary Services</h3>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <!-- Ordered exactly per instructions -->
+                                        <!-- 1. Seat Selection -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-armchair text-slate-500 mr-1"></i> Seat Selection</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-seats" value="Seat Selection" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 2. Meal Selection -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-fork-knife text-slate-500 mr-1"></i> Meal Selection</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-meals" value="Meal Selection" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 3. Hotel Reservation -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-buildings text-slate-500 mr-1"></i> Hotel Reservation</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-hotel" value="Hotel Reservation" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 4. Car Rental -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-car text-slate-500 mr-1"></i> Car Rental</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-car" value="Car Rental" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 5. Train Tickets -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-train text-slate-500 mr-1"></i> Train Tickets</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-train" value="Train Tickets" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 6. Bus Tickets -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-bus text-slate-500 mr-1"></i> Bus Tickets</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-bus" value="Bus Tickets" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 7. Travel Care Service -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-heartbeat text-slate-500 mr-1"></i> Travel Care Service</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-travelcare" value="Travel Care Service" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 8. Medical Trip Protection -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-first-aid text-slate-500 mr-1"></i> Medical Trip Protection</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-medical" value="Medical Trip Protection" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 9. Cancel for any Reason -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-x-circle text-slate-500 mr-1"></i> Cancel For Any Reason</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-cfar" value="Cancel For Any Reason" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 10. Change for any Reason -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-arrows-left-right text-slate-500 mr-1"></i> Change For Any Reason</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-chfar" value="Change For Any Reason" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 11. Lost Baggage Protection -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-suitcase text-slate-500 mr-1"></i> Lost Baggage Protection</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-baggage" value="Lost Baggage Protection" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 12. Additional Baggage -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-tote text-slate-500 mr-1"></i> Additional Baggage</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-addbaggage" value="Additional Baggage" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 13. Airport Transfer -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-car-profile text-slate-500 mr-1"></i> Airport Transfer</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-transfer" value="Airport Transfer" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 14. VIP Services -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-crown text-yellow-500 mr-1"></i> VIP Services</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-vip" value="VIP Services" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 15. Price Drop Monitor -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-trend-down text-green-500 mr-1"></i> Price Drop Monitor</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-pricedrop" value="Price Drop Monitor" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 16. Dream Pass Membership -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-star text-purple-500 mr-1"></i> Dream Pass</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-dreampass" value="Dream Pass Membership" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                        <!-- 17. Promotional Gift Voucher -->
+                                        <label class="flex items-center justify-between p-2 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group">
+                                            <span class="text-xs font-medium text-slate-700 group-hover:text-blue-600"><i class="ph ph-ticket text-slate-500 mr-1"></i> Promo Gift Voucher</span>
+                                            <div class="relative inline-flex items-center">
+                                                <input type="checkbox" id="addon-promo" value="Promotional Gift Voucher" class="sr-only peer addon-cb">
+                                                <div class="w-7 h-4 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                                            </div>
+                                        </label>
+
+                                    </div>
+                                </div>
+
+                                <div class="w-full border-t border-slate-100"></div>
+
+                                <!-- SECTION 6: Notes -->
+                                <div>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">6. Additional Information</h3>
+                                    <label for="notes" class="block text-xs font-medium text-slate-700 mb-1">Agent Notes</label>
+                                    <textarea id="notes" rows="2" placeholder="Specific airlines preferred, mobility needs, dietary requirements..." class="block w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors resize-none"></textarea>
                                 </div>
                                 
-                                <div class="mt-auto pt-2 flex justify-end">
+                                <div class="mt-auto pt-4 pb-2 flex justify-end">
                                     <button type="button" onclick="clearForm()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200 shadow-sm">
                                         Clear Fields
                                     </button>
@@ -385,13 +683,56 @@
     <!-- Custom Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
+        // NATO military phonetic alphabet dictionary
+        const natoAlphabet = {
+            'a': 'Alpha', 'b': 'Bravo', 'c': 'Charlie', 'd': 'Delta', 'e': 'Echo', 'f': 'Foxtrot',
+            'g': 'Golf', 'h': 'Hotel', 'i': 'India', 'j': 'Juliet', 'k': 'Kilo', 'l': 'Lima',
+            'm': 'Mike', 'n': 'November', 'o': 'Oscar', 'p': 'Papa', 'q': 'Quebec', 'r': 'Romeo',
+            's': 'Sierra', 't': 'Tango', 'u': 'Uniform', 'v': 'Victor', 'w': 'Whiskey', 'x': 'X-ray',
+            'y': 'Yankee', 'z': 'Zulu',
+            '0': 'Zero', '1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six',
+            '7': 'Seven', '8': 'Eight', '9': 'Niner',
+            '@': '[AT]', '.': '[DOT]', '_': '[UNDERSCORE]', '-': '[DASH]'
+        };
+
         // DOM Elements
         let formInputs;
         const previewContainer = document.getElementById('preview-container');
+        let departPicker;
+        let returnPicker;
         
         // Initial setup
         document.addEventListener('DOMContentLoaded', () => {
+            // Setup Flatpickr Calendars
+            const flatpickrConfig = {
+                dateFormat: "Y-m-d", // Value format
+                altInput: true,
+                altFormat: "d-m-Y", // Visual display format
+                minDate: "today",
+                onChange: function() {
+                    updateFlexibleDatesEngine();
+                    generatePreview();
+                    saveFormData();
+                }
+            };
+            
+            departPicker = flatpickr("#depart-date", {
+                ...flatpickrConfig,
+                onChange: function(selectedDates) {
+                    if(selectedDates[0]) {
+                       returnPicker.set('minDate', selectedDates[0]);
+                    }
+                    updateFlexibleDatesEngine();
+                    generatePreview();
+                    saveFormData();
+                }
+            });
+            
+            returnPicker = flatpickr("#return-date", flatpickrConfig);
+
             // Gather all input fields dynamically
             formInputs = document.querySelectorAll('#lead-form input, #lead-form select, #lead-form textarea');
             
@@ -400,10 +741,12 @@
                 input.addEventListener('input', () => {
                     generatePreview();
                     saveFormData();
+                    updateMilitarySpellings();
                 });
                 input.addEventListener('change', () => {
                     generatePreview();
                     saveFormData();
+                    updateMilitarySpellings();
                 });
             });
 
@@ -411,15 +754,43 @@
             document.getElementById('trip-oneway').addEventListener('change', toggleTripType);
             document.getElementById('trip-round').addEventListener('change', toggleTripType);
             document.getElementById('layover-toggle').addEventListener('change', toggleLayoverField);
+            document.getElementById('date-flexibility').addEventListener('change', updateFlexibleDatesEngine);
 
             // Load saved data when the page loads
             loadFormData();
         });
 
-        // --- LOCAL STORAGE (AUTO-SAVE) ---
+        // Convert any string character-by-character to NATO Phonetic Spelling with exact requested format
+        function getPhoneticSpelling(text) {
+            if (!text || text.trim() === '') {
+                return '<span class="text-slate-500 italic">Start typing to translate...</span>';
+            }
+            return text.toLowerCase().split('').map(char => {
+                const translation = natoAlphabet[char];
+                if (char === ' ') {
+                    return '<span class="text-blue-400 font-bold px-1">[SPACE]</span>';
+                }
+                if (translation) {
+                    return `<span class="text-blue-400 font-bold uppercase">${char}</span> <span class="text-slate-400 text-[10px]">as</span> <span class="text-white font-medium">${translation}</span>`;
+                }
+                return `<span class="text-slate-400 font-bold uppercase">${char}</span>`;
+            }).join(' <span class="text-slate-600 font-normal mx-1">•</span> ');
+        }
+
+        // Live update the tooltip containers for Name and Email spellings
+        function updateMilitarySpellings() {
+            const nameVal = document.getElementById('name').value;
+            const emailVal = document.getElementById('email').value;
+
+            document.getElementById('name-phonetic').innerHTML = getPhoneticSpelling(nameVal);
+            document.getElementById('email-phonetic').innerHTML = getPhoneticSpelling(emailVal);
+        }
+
+        // Local Storage Engine
         function saveFormData() {
             const formData = {};
             formInputs.forEach(input => {
+                // Ensure radios are captured properly by storing their checked state mapped to ID
                 if (input.type === 'radio' || input.type === 'checkbox') {
                     formData[input.id] = input.checked;
                 } else {
@@ -442,15 +813,112 @@
                         }
                     }
                 });
+                
+                // Hydrate Flatpickrs explicitly
+                if (formData['depart-date']) departPicker.setDate(formData['depart-date']);
+                if (formData['return-date']) returnPicker.setDate(formData['return-date']);
             }
             
             // Force UI layout to match the loaded state
             toggleTripType();
             toggleLayoverField();
+            updateFlexibleDatesEngine();
+            updateMilitarySpellings();
             generatePreview();
         }
 
-        // --- UI TOGGLE FUNCTIONS ---
+        // Dynamic Date Flexibility Engine
+        // Helper to compute flexible search windows based on chosen target dates
+        function computeDateOffsetWindow(baseDateStr, flexOption) {
+            if (!baseDateStr) return null;
+            const baseDate = new Date(baseDateStr + 'T00:00:00');
+            if (isNaN(baseDate.getTime())) return null;
+
+            let offsetDays = 0;
+            if (flexOption === '+/- 1 Day') offsetDays = 1;
+            else if (flexOption === '+/- 2 Days') offsetDays = 2;
+            else if (flexOption === '+/- 3 Days') offsetDays = 3;
+            else if (flexOption === 'Very Flexible (1 Week+)') offsetDays = 7;
+
+            const dateList = [];
+            for (let i = -offsetDays; i <= offsetDays; i++) {
+                const tempDate = new Date(baseDate.getTime());
+                tempDate.setDate(baseDate.getDate() + i);
+                
+                const dayNum = tempDate.getDate();
+                const monthName = tempDate.toLocaleDateString('en-US', { month: 'short' });
+                const isCenter = (i === 0);
+                
+                dateList.push({
+                    dayNum,
+                    monthName,
+                    isCenter,
+                    formatted: `${monthName} ${dayNum}`
+                });
+            }
+            return dateList;
+        }
+
+        // Render dynamic date tags to keep user informed of flexible searches
+        function updateFlexibleDatesEngine() {
+            const depDateVal = document.getElementById('depart-date').value;
+            const retDateVal = document.getElementById('return-date').value;
+            const isRoundTrip = document.getElementById('trip-round').checked;
+            const flexVal = document.getElementById('date-flexibility').value;
+
+            const flexWidget = document.getElementById('flexible-days-output');
+            const depBox = document.getElementById('flex-dep-window');
+            const retBox = document.getElementById('flex-ret-window');
+
+            if (!depDateVal && (!isRoundTrip || !retDateVal)) {
+                flexWidget.classList.add('hidden');
+                return;
+            }
+
+            flexWidget.classList.remove('hidden');
+
+            // Render Departure flexibility tags
+            if (depDateVal) {
+                const depWindow = computeDateOffsetWindow(depDateVal, flexVal);
+                if (depWindow) {
+                    let htmlStr = `<span class="font-semibold text-slate-700 min-w-[70px]">Departure:</span>`;
+                    depWindow.forEach(d => {
+                        if (d.isCenter) {
+                            htmlStr += `<span class="px-2 py-0.5 bg-blue-600 text-white font-semibold rounded text-[11px] shadow-sm">${d.formatted}</span>`;
+                        } else {
+                            htmlStr += `<span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px]">${d.dayNum}</span>`;
+                        }
+                    });
+                    depBox.innerHTML = htmlStr;
+                    depBox.classList.remove('hidden');
+                }
+            } else {
+                depBox.classList.add('hidden');
+            }
+
+            // Render Return flexibility tags
+            if (isRoundTrip && retDateVal) {
+                const retWindow = computeDateOffsetWindow(retDateVal, flexVal);
+                if (retWindow) {
+                    let htmlStr = `<span class="font-semibold text-slate-700 min-w-[70px]">Return:</span>`;
+                    retWindow.forEach(d => {
+                        if (d.isCenter) {
+                            htmlStr += `<span class="px-2 py-0.5 bg-blue-600 text-white font-semibold rounded text-[11px] shadow-sm">${d.formatted}</span>`;
+                        } else {
+                            htmlStr += `<span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px]">${d.dayNum}</span>`;
+                        }
+                    });
+                    retBox.innerHTML = htmlStr;
+                    retBox.classList.remove('hidden');
+                } else {
+                    retBox.classList.add('hidden');
+                }
+            } else {
+                retBox.classList.add('hidden');
+            }
+        }
+
+        // Interface layouts and dynamic action modules
         function toggleTripType() {
             const isRoundTrip = document.getElementById('trip-round').checked;
             const returnDateContainer = document.getElementById('return-date-container');
@@ -458,12 +926,11 @@
             
             if (isRoundTrip) {
                 returnDateContainer.classList.remove('opacity-40', 'pointer-events-none', 'grayscale');
-                returnDateInput.disabled = false;
             } else {
                 returnDateContainer.classList.add('opacity-40', 'pointer-events-none', 'grayscale');
-                returnDateInput.disabled = true;
-                returnDateInput.value = ''; // clear when disabled
+                returnPicker.clear(); // clear flatpickr when disabled
             }
+            updateFlexibleDatesEngine();
             generatePreview();
             saveFormData();
         }
@@ -482,18 +949,24 @@
             saveFormData();
         }
 
-        // --- CORE ACTIONS ---
+        // CORE ACTIONS
         function startNewLead() {
             document.getElementById('lead-form').reset();
             localStorage.removeItem('aeroleads_DraftData');
             
-            // Reset numerical default values manually
+            // Reset numerical & premium default values manually
             document.getElementById('pax-adults').value = "1";
             document.getElementById('pax-children').value = "0";
             document.getElementById('pax-infants').value = "0";
+            document.getElementById('cabin-class').value = "Business";
+            
+            departPicker.clear();
+            returnPicker.clear();
             
             toggleTripType();
             toggleLayoverField();
+            updateFlexibleDatesEngine();
+            updateMilitarySpellings();
             generatePreview();
             
             showToast("Ready for a new lead!", "success");
@@ -503,19 +976,25 @@
             document.getElementById('lead-form').reset();
             localStorage.removeItem('aeroleads_DraftData');
             
-            // Reset numerical default values manually
+            // Reset numerical & premium default values manually
             document.getElementById('pax-adults').value = "1";
             document.getElementById('pax-children').value = "0";
             document.getElementById('pax-infants').value = "0";
+            document.getElementById('cabin-class').value = "Business";
+            
+            departPicker.clear();
+            returnPicker.clear();
             
             toggleTripType();
             toggleLayoverField();
+            updateFlexibleDatesEngine();
+            updateMilitarySpellings();
             generatePreview();
             
             showToast("Form cleared", "info");
         }
 
-        // --- TAB LOGIC ---
+        // TAB LOGIC
         function switchTab(tabId) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -535,7 +1014,7 @@
             activeNavBtn.className = "w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white shadow";
         }
 
-        // --- PREVIEW GENERATOR ---
+        // PREVIEW GENERATOR
         function generatePreview() {
             // Fetch Personal details
             const name = document.getElementById('name').value.trim();
@@ -546,8 +1025,18 @@
             const tripType = document.getElementById('trip-round').checked ? 'Round-trip' : 'One-way';
             const departure = document.getElementById('departure').value.trim().toUpperCase();
             const arrival = document.getElementById('arrival').value.trim().toUpperCase();
-            const departDate = document.getElementById('depart-date').value;
-            const returnDate = document.getElementById('return-date').value;
+            
+            // Extract the visual formatted value from flatpickr's altInput
+            const departInputEl = document.querySelector('#depart-date').nextElementSibling;
+            const returnInputEl = document.querySelector('#return-date').nextElementSibling;
+            const fmtDepart = departInputEl && departInputEl.value ? departInputEl.value : 'TBD';
+            const fmtReturn = tripType === 'Round-trip' && returnInputEl && returnInputEl.value ? returnInputEl.value : 'N/A';
+            
+            // Raw flatpickr values used for calculating flex offsets
+            const rawDepart = document.getElementById('depart-date').value;
+            const rawReturn = document.getElementById('return-date').value;
+
+            const dateFlexibility = document.getElementById('date-flexibility').value;
             
             const adults = parseInt(document.getElementById('pax-adults').value) || 0;
             const children = parseInt(document.getElementById('pax-children').value) || 0;
@@ -555,72 +1044,104 @@
             const totalPax = adults + children + infants;
             
             const cabin = document.getElementById('cabin-class').value;
-            const stops = document.getElementById('stops').value;
+            
+            // Fetch Radio Button Selection for Stops
+            const stopsEle = document.querySelector('input[name="stops"]:checked');
+            const stops = stopsEle ? stopsEle.value : 'Flexible';
             
             const hasLayover = document.getElementById('layover-toggle').checked;
             const layoverAirport = document.getElementById('layover-airport').value.trim().toUpperCase();
             const notes = document.getElementById('notes').value.trim();
 
+            // Fetch selected Add-ons
+            const selectedAddons = [];
+            document.querySelectorAll('.addon-cb:checked').forEach(cb => {
+                selectedAddons.push(cb.value);
+            });
+
             // Check if form is completely empty (basic fields)
-            if (!name && !phone && !email && !departure && !arrival && !departDate) {
+            if (!name && !phone && !email && !departure && !arrival && !rawDepart) {
                 previewContainer.innerHTML = '<span class="text-slate-500 italic">Waiting for input... Fill out the form on the left to generate the CRM note.</span>';
                 return;
             }
 
-            // Format dates cleanly
-            const fmtDepart = departDate ? new Date(departDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'TBD';
-            const fmtReturn = tripType === 'Round-trip' && returnDate ? new Date(returnDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
             
-            // Build the Output String
-            let output = `--- NEW LEAD CAPTURE ---\n`;
+            // Build the dynamic calendar flex-range output strings
+            let depRangeStr = '';
+            let retRangeStr = '';
+            const depOffsetWindow = computeDateOffsetWindow(rawDepart, dateFlexibility);
+            if (depOffsetWindow && depOffsetWindow.length > 1) {
+                depRangeStr = ` [Range: ${depOffsetWindow[0].formatted} to ${depOffsetWindow[depOffsetWindow.length - 1].formatted}]`;
+            }
+            
+            const retOffsetWindow = computeDateOffsetWindow(rawReturn, dateFlexibility);
+            if (tripType === 'Round-trip' && retOffsetWindow && retOffsetWindow.length > 1) {
+                retRangeStr = ` [Range: ${retOffsetWindow[0].formatted} to ${retOffsetWindow[retOffsetWindow.length - 1].formatted}]`;
+            }
+
+            // Build the Output String (perfect premium qualifying order)
+            let output = `--- VIP LEAD CAPTURE ---\n`;
             output += `Date: ${currentDate}\n\n`;
             
-            output += `[CLIENT DETAILS]\n`;
+            output += `[CLIENT IDENTITY]\n`;
             output += `Name:  ${name || 'N/A'}\n`;
             output += `Phone: ${phone || 'N/A'}\n`;
             output += `Email: ${email || 'N/A'}\n\n`;
             
-            output += `[TRIP REQUIREMENTS]\n`;
+            output += `[CABIN & PASSENGERS]\n`;
+            output += `Class: ${cabin}\n`;
+            output += `Pax:   ${adults} Adults, ${children} Children, ${infants} Infants (Total: ${totalPax})\n\n`;
+
+            output += `[ITINERARY & SCHEDULING]\n`;
             output += `Type:  ${tripType}\n`;
             output += `Route: ${departure || 'TBD'} -> ${arrival || 'TBD'}\n`;
             
             if (tripType === 'Round-trip') {
-                output += `Dates: ${fmtDepart} to ${fmtReturn}\n`;
+                output += `Dates: ${fmtDepart}${depRangeStr} to ${fmtReturn}${retRangeStr}\n`;
             } else {
-                output += `Date:  ${fmtDepart}\n`;
+                output += `Date:  ${fmtDepart}${depRangeStr}\n`;
             }
+            output += `Flex:  ${dateFlexibility}\n\n`;
             
-            output += `Class: ${cabin}\n`;
-            output += `Pax:   ${adults} Adults, ${children} Children, ${infants} Infants (Total: ${totalPax})\n\n`;
-
-            output += `[FLIGHT PREFERENCES]\n`;
+            output += `[ROUTING PREFERENCES]\n`;
             output += `Stops:   ${stops}\n`;
             if (hasLayover && layoverAirport) {
-                output += `Layover: Preferred at ${layoverAirport}\n`;
+                output += `Layover: Prefers connection at ${layoverAirport}\n`;
+            }
+            output += `\n`;
+
+            if (selectedAddons.length > 0) {
+                output += `[CROSS-SELL / ANCILLARIES]\n`;
+                selectedAddons.forEach(addon => {
+                    output += `+ ${addon}\n`;
+                });
+                output += `\n`;
             }
             
             if (notes) {
-                output += `\n[AGENT NOTES]\n${notes}\n`;
+                output += `[AGENT NOTES]\n${notes}\n\n`;
             }
             
-            output += `\n------------------------`;
+            output += `------------------------`;
 
             // Escape HTML and inject
             previewContainer.textContent = output;
             
-            // Add subtle syntax highlighting
+            // Add premium color themes and code structure highlights inside the preview window
             const coloredHTML = previewContainer.innerHTML
-                .replace(/--- NEW LEAD CAPTURE ---/g, '<span class="text-blue-400 font-bold">--- NEW LEAD CAPTURE ---</span>')
-                .replace(/\[CLIENT DETAILS\]/g, '<span class="text-emerald-400 font-bold">[CLIENT DETAILS]</span>')
-                .replace(/\[TRIP REQUIREMENTS\]/g, '<span class="text-purple-400 font-bold">[TRIP REQUIREMENTS]</span>')
-                .replace(/\[FLIGHT PREFERENCES\]/g, '<span class="text-pink-400 font-bold">[FLIGHT PREFERENCES]</span>')
+                .replace(/--- VIP LEAD CAPTURE ---/g, '<span class="text-blue-400 font-bold">--- VIP LEAD CAPTURE ---</span>')
+                .replace(/\[CLIENT IDENTITY\]/g, '<span class="text-emerald-400 font-bold">[CLIENT IDENTITY]</span>')
+                .replace(/\[CABIN & PASSENGERS\]/g, '<span class="text-amber-400 font-bold">[CABIN & PASSENGERS]</span>')
+                .replace(/\[ITINERARY & SCHEDULING\]/g, '<span class="text-purple-400 font-bold">[ITINERARY & SCHEDULING]</span>')
+                .replace(/\[ROUTING PREFERENCES\]/g, '<span class="text-pink-400 font-bold">[ROUTING PREFERENCES]</span>')
+                .replace(/\[CROSS-SELL \/ ANCILLARIES\]/g, '<span class="text-cyan-400 font-bold">[CROSS-SELL / ANCILLARIES]</span>')
                 .replace(/\[AGENT NOTES\]/g, '<span class="text-yellow-400 font-bold">[AGENT NOTES]</span>');
                 
             previewContainer.innerHTML = coloredHTML;
         }
 
-        // --- COPY LOGIC ---
+        // COPY LOGIC
         function copyLeadData() {
             const rawText = previewContainer.textContent;
             
@@ -660,7 +1181,7 @@
             showToast("Lead data copied to clipboard!", "success");
         }
 
-        // --- TOAST NOTIFICATIONS ---
+        // TOAST NOTIFICATIONS
         function showToast(message, type = "success") {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -674,7 +1195,7 @@
                 icon = '<i class="ph-fill ph-warning-circle text-red-400 mr-2 text-lg"></i>';
             }
 
-            toast.className = `flex items-center px-4 py-3 rounded shadow-lg toast-enter ${bgClass} border border-slate-700`;
+            toast.className = `flex items-center px-4 py-3 rounded shadow-lg toast-enter ${bgClass} border border-slate-700 pointer-events-auto`;
             toast.innerHTML = `${icon} <span class="text-sm font-medium">${message}</span>`;
             
             container.appendChild(toast);
