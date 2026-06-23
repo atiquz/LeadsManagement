@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel CRM - Lead Capture</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Phosphor Icons for modern, clean UI icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        /* Custom Scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Toast Animation */
+        @keyframes slideInUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .toast-enter {
+            animation: slideInUp 0.3s ease-out forwards;
+        }
+        .toast-exit {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        /* Smooth tab transition */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300 hidden md:flex z-20 shadow-xl">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+            <i class="ph ph-airplane-tilt text-blue-500 text-2xl mr-3"></i>
+            <span class="text-white font-bold text-lg tracking-wide">AeroLeads CRM</span>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+            <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Lead Management</p>
+            
+            <button onclick="switchTab('new-leads')" id="nav-new-leads" class="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white">
+                <i class="ph ph-user-plus text-lg mr-3"></i>
+                New Leads
+            </button>
+            
+            <button onclick="switchTab('bonus-queue')" id="nav-bonus-queue" class="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-slate-800 hover:text-white">
+                <i class="ph ph-users-three text-lg mr-3"></i>
+                Bonus Queue (BQ)
+            </button>
+        </nav>
+
+        <!-- User Profile Area (Mockup) -->
+        <div class="p-4 border-t border-slate-800 bg-slate-900">
+            <div class="flex items-center">
+                <img src="https://placehold.co/40x40/3b82f6/ffffff?text=AG" alt="Agent" class="h-9 w-9 rounded-full mr-3 border border-slate-700">
+                <div>
+                    <p class="text-sm font-medium text-white">Travel Agent</p>
+                    <p class="text-xs text-slate-500">agent@aeroleads.com</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
+        
+        <!-- Mobile Header (Visible only on small screens) -->
+        <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-10">
+            <div class="flex items-center">
+                <i class="ph ph-airplane-tilt text-blue-600 text-xl mr-2"></i>
+                <span class="font-bold text-slate-800">AeroLeads</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="switchTab('new-leads')" class="text-xs px-3 py-1.5 bg-blue-100 text-blue-700 rounded font-medium">New</button>
+                <button onclick="switchTab('bonus-queue')" class="text-xs px-3 py-1.5 bg-slate-100 text-slate-700 rounded font-medium">BQ</button>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+            
+            <!-- TAB 1: New Leads -->
+            <div id="tab-new-leads" class="tab-content active h-full">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-slate-900">Capture New Lead</h1>
+                    <p class="text-slate-500 text-sm mt-1">Enter flight inquiry details to generate a formatted CRM note.</p>
+                </div>
+
+                <!-- Grid Layout for Form (Left) and Preview (Right) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 h-[calc(100%-4rem)] pb-10">
+                    
+                    <!-- LEFT COLUMN: Input Form -->
+                    <div class="lg:col-span-7 xl:col-span-6 flex flex-col h-full">
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex-1 flex flex-col overflow-y-auto">
+                            <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-5 flex items-center">
+                                <i class="ph ph-list-dashes text-blue-500 mr-2"></i> Lead Details
+                            </h2>
+                            
+                            <form id="lead-form" class="space-y-5 flex-1">
+                                <!-- Personal Info Section -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="ph ph-user text-slate-400"></i>
+                                            </div>
+                                            <input type="text" id="name" placeholder="John Doe" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="ph ph-phone text-slate-400"></i>
+                                            </div>
+                                            <input type="tel" id="phone" placeholder="+1 (555) 000-0000" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="ph ph-envelope-simple text-slate-400"></i>
+                                        </div>
+                                        <input type="email" id="email" placeholder="john.doe@example.com" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors" autocomplete="off">
+                                    </div>
+                                </div>
+
+                                <div class="w-full border-t border-slate-100 my-2"></div>
+
+                                <!-- Itinerary Section -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label for="departure" class="block text-sm font-medium text-slate-700 mb-1">Departure</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="ph ph-airplane-takeoff text-slate-400"></i>
+                                            </div>
+                                            <input type="text" id="departure" placeholder="City or Airport Code (e.g. JFK)" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm uppercase transition-colors" autocomplete="off">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="arrival" class="block text-sm font-medium text-slate-700 mb-1">Arrival</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="ph ph-airplane-landing text-slate-400"></i>
+                                            </div>
+                                            <input type="text" id="arrival" placeholder="City or Airport Code (e.g. LHR)" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm uppercase transition-colors" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="stops" class="block text-sm font-medium text-slate-700 mb-1">Flight Preferences (Stops)</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="ph ph-git-merge text-slate-400"></i>
+                                        </div>
+                                        <select id="stops" class="block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white appearance-none cursor-pointer">
+                                            <option value="" disabled selected>Select routing preference...</option>
+                                            <option value="Non-stop">Non-stop preferred</option>
+                                            <option value="1 Stop">Up to 1 Stop</option>
+                                            <option value="2 Stops">Up to 2 Stops</option>
+                                            <option value="Any Routing (Lowest Price)">Any Routing (Lowest Price)</option>
+                                            <option value="Customer Preferred Routing">Customer Preferred Routing</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <i class="ph ph-caret-down text-slate-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="notes" class="block text-sm font-medium text-slate-700 mb-1">Additional Notes (Optional)</label>
+                                    <textarea id="notes" rows="2" placeholder="Specific airlines, baggage needs, dates..." class="block w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors resize-none"></textarea>
+                                </div>
+                                
+                                <div class="mt-auto pt-4 flex justify-end">
+                                    <button type="button" onclick="clearForm()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors mr-2">
+                                        Clear Fields
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: Output / Preview & Copy -->
+                    <div class="lg:col-span-5 xl:col-span-6 flex flex-col h-full">
+                        <div class="bg-slate-900 rounded-xl shadow-lg flex flex-col h-full overflow-hidden border border-slate-800">
+                            <!-- Header of Output Card -->
+                            <div class="px-4 py-3 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <span class="ml-2 text-xs font-mono text-slate-400">Lead_Output.txt</span>
+                                </div>
+                                <button onclick="copyLeadData()" class="group flex items-center text-xs font-semibold px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                    <i class="ph ph-copy text-sm mr-1.5 group-hover:scale-110 transition-transform"></i> Copy Data
+                                </button>
+                            </div>
+                            
+                            <!-- Display Area -->
+                            <div class="flex-1 p-5 overflow-y-auto relative bg-[#0d1117]">
+                                <pre id="preview-container" class="font-mono text-sm leading-relaxed text-slate-300 whitespace-pre-wrap word-break">
+<span class="text-slate-500 italic">Waiting for input...</span>
+                                </pre>
+                                
+                                <!-- Success overlay when copied -->
+                                <div id="copy-success-overlay" class="absolute inset-0 bg-blue-600/10 backdrop-blur-[2px] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+                                    <div class="bg-slate-900 text-white px-4 py-2 rounded-lg shadow-xl flex items-center border border-blue-500/30">
+                                        <i class="ph-fill ph-check-circle text-green-400 text-xl mr-2"></i>
+                                        <span class="font-medium">Copied to Clipboard!</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- TAB 2: Bonus Queue Leads -->
+            <div id="tab-bonus-queue" class="tab-content h-full">
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Bonus Queue (BQ) Leads</h1>
+                        <p class="text-slate-500 text-sm mt-1">Manage secondary and promotional lead allocations.</p>
+                    </div>
+                    <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg flex items-center transition-colors shadow-sm">
+                        <i class="ph ph-arrows-clockwise mr-2"></i> Refresh Queue
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-12 text-center flex flex-col items-center justify-center">
+                        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="ph ph-users-three text-3xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">Bonus Queue is Empty</h3>
+                        <p class="text-slate-500 max-w-md mx-auto mb-6">There are currently no leads assigned to your bonus queue. Check back later or request allocation from your manager.</p>
+                        
+                        <!-- Mock Table Header to show layout intention -->
+                        <div class="w-full max-w-4xl border border-slate-100 rounded-lg overflow-hidden text-left mt-4 opacity-50">
+                            <div class="bg-slate-50 border-b border-slate-100 px-4 py-3 grid grid-cols-4 text-xs font-semibold text-slate-500 uppercase">
+                                <div>Lead Info</div>
+                                <div>Destination</div>
+                                <div>Priority</div>
+                                <div>Action</div>
+                            </div>
+                            <div class="px-4 py-4 text-sm text-slate-400 text-center bg-white">
+                                No records to display
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Custom Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // DOM Elements
+        const formInputs = document.querySelectorAll('#lead-form input, #lead-form select, #lead-form textarea');
+        const previewContainer = document.getElementById('preview-container');
+        
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach event listeners to all form inputs to update preview live
+            formInputs.forEach(input => {
+                input.addEventListener('input', generatePreview);
+                input.addEventListener('change', generatePreview);
+            });
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Reset Sidebar Styles
+            const navBtnClassStr = "w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-slate-800 hover:text-white text-slate-300";
+            document.getElementById('nav-new-leads').className = navBtnClassStr;
+            document.getElementById('nav-bonus-queue').className = navBtnClassStr;
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Update active sidebar button
+            const activeNavBtn = document.getElementById(`nav-${tabId}`);
+            activeNavBtn.className = "w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white shadow";
+        }
+
+        // Logic to generate the formatted text for the right panel
+        function generatePreview() {
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const departure = document.getElementById('departure').value.trim().toUpperCase();
+            const arrival = document.getElementById('arrival').value.trim().toUpperCase();
+            const stops = document.getElementById('stops').value;
+            const notes = document.getElementById('notes').value.trim();
+
+            // Check if form is completely empty
+            if (!name && !phone && !email && !departure && !arrival && !stops && !notes) {
+                previewContainer.innerHTML = '<span class="text-slate-500 italic">Waiting for input...</span>';
+                return;
+            }
+
+            // Create formatted string
+            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            
+            let output = `--- NEW LEAD CAPTURE ---\n`;
+            output += `Date: ${currentDate}\n\n`;
+            
+            output += `[CLIENT DETAILS]\n`;
+            output += `Name:  ${name || 'N/A'}\n`;
+            output += `Phone: ${phone || 'N/A'}\n`;
+            output += `Email: ${email || 'N/A'}\n\n`;
+            
+            output += `[TRIP ITINERARY]\n`;
+            output += `From:  ${departure || 'N/A'}\n`;
+            output += `To:    ${arrival || 'N/A'}\n`;
+            output += `Stops: ${stops || 'Not specified'}\n`;
+            
+            if (notes) {
+                output += `\n[AGENT NOTES]\n${notes}\n`;
+            }
+            
+            output += `\n------------------------`;
+
+            // Escape HTML to prevent injection if user types HTML tags
+            previewContainer.textContent = output;
+            
+            // Add a subtle syntax highlighting effect for the headers
+            const coloredHTML = previewContainer.innerHTML
+                .replace(/--- NEW LEAD CAPTURE ---/g, '<span class="text-blue-400 font-bold">--- NEW LEAD CAPTURE ---</span>')
+                .replace(/\[CLIENT DETAILS\]/g, '<span class="text-emerald-400 font-bold">[CLIENT DETAILS]</span>')
+                .replace(/\[TRIP ITINERARY\]/g, '<span class="text-purple-400 font-bold">[TRIP ITINERARY]</span>')
+                .replace(/\[AGENT NOTES\]/g, '<span class="text-yellow-400 font-bold">[AGENT NOTES]</span>');
+                
+            previewContainer.innerHTML = coloredHTML;
+        }
+
+        // Logic to clear the form
+        function clearForm() {
+            document.getElementById('lead-form').reset();
+            generatePreview();
+            showToast("Form cleared", "info");
+        }
+
+        // Custom function to copy text securely (fallback to execCommand if clipboard API fails/unavailable in iframe)
+        function copyLeadData() {
+            const rawText = previewContainer.textContent;
+            
+            if (rawText.includes("Waiting for input")) {
+                showToast("Nothing to copy yet!", "error");
+                return;
+            }
+
+            // Fallback copy method compatible with more embed environments
+            const textArea = document.createElement("textarea");
+            textArea.value = rawText;
+            
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess();
+                } else {
+                    showToast("Failed to copy", "error");
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showToast("Error copying text", "error");
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        // Visual feedback for successful copy
+        function showCopySuccess() {
+            // Flash the overlay in the preview box
+            const overlay = document.getElementById('copy-success-overlay');
+            overlay.classList.remove('opacity-0');
+            
+            setTimeout(() => {
+                overlay.classList.add('opacity-0');
+            }, 1500);
+
+            showToast("Lead data copied to clipboard!", "success");
+        }
+
+        // Custom Toast Notification Function (replaces alert)
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Set styles based on type
+            let bgClass = "bg-slate-800 text-white";
+            let icon = '<i class="ph-fill ph-info text-blue-400 mr-2 text-lg"></i>';
+            
+            if (type === "success") {
+                icon = '<i class="ph-fill ph-check-circle text-green-400 mr-2 text-lg"></i>';
+            } else if (type === "error") {
+                icon = '<i class="ph-fill ph-warning-circle text-red-400 mr-2 text-lg"></i>';
+            }
+
+            toast.className = `flex items-center px-4 py-3 rounded shadow-lg toast-enter ${bgClass} border border-slate-700`;
+            toast.innerHTML = `${icon} <span class="text-sm font-medium">${message}</span>`;
+            
+            container.appendChild(toast);
+
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                
+                // Wait for animation to finish before removing node
+                setTimeout(() => {
+                    if(container.contains(toast)) {
+                        container.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
