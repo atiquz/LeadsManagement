@@ -180,16 +180,17 @@
                                         <div>
                                             <div class="flex items-center justify-between mb-1">
                                                 <label for="name" class="block text-xs font-medium text-slate-700">Full Name</label>
-                                                <div class="relative group">
+                                                <!-- Adjusted positioning to drop down instead of up -->
+                                                <div class="relative group z-10 hover:z-50">
                                                     <button type="button" class="text-slate-400 hover:text-blue-500 flex items-center focus:outline-none">
                                                         <i class="ph ph-question text-sm"></i>
                                                         <span class="text-[10px] ml-0.5 font-medium underline">Phonetics</span>
                                                     </button>
-                                                    <div class="absolute right-0 bottom-6 hidden group-hover:block w-64 bg-slate-900 text-white text-xs p-3 rounded-lg shadow-xl border border-slate-700 z-50">
+                                                    <div class="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-slate-900 text-white text-xs p-3 rounded-lg shadow-xl border border-slate-700 z-50">
                                                         <p class="font-bold border-b border-slate-700 pb-1 mb-1.5 flex items-center">
                                                             <i class="ph ph-microphone text-blue-400 mr-1.5"></i> NATO Phonetic Spelling:
                                                         </p>
-                                                        <div id="name-phonetic" class="font-mono text-slate-300 leading-normal whitespace-pre-wrap max-h-36 overflow-y-auto">
+                                                        <div id="name-phonetic" class="font-mono text-slate-300 leading-normal whitespace-pre-wrap max-h-48 overflow-y-auto">
                                                             Start typing a name...
                                                         </div>
                                                     </div>
@@ -218,16 +219,17 @@
                                         <div class="md:col-span-2">
                                             <div class="flex items-center justify-between mb-1">
                                                 <label for="email" class="block text-xs font-medium text-slate-700">Email Address</label>
-                                                <div class="relative group">
+                                                <!-- Adjusted positioning to drop down instead of up -->
+                                                <div class="relative group z-10 hover:z-50">
                                                     <button type="button" class="text-slate-400 hover:text-blue-500 flex items-center focus:outline-none">
                                                         <i class="ph ph-question text-sm"></i>
                                                         <span class="text-[10px] ml-0.5 font-medium underline">Phonetics</span>
                                                     </button>
-                                                    <div class="absolute right-0 bottom-6 hidden group-hover:block w-72 bg-slate-900 text-white text-xs p-3 rounded-lg shadow-xl border border-slate-700 z-50">
+                                                    <div class="absolute right-0 top-full mt-2 hidden group-hover:block w-80 bg-slate-900 text-white text-xs p-3 rounded-lg shadow-xl border border-slate-700 z-50">
                                                         <p class="font-bold border-b border-slate-700 pb-1 mb-1.5 flex items-center">
                                                             <i class="ph ph-microphone text-blue-400 mr-1.5"></i> NATO Phonetic Spelling:
                                                         </p>
-                                                        <div id="email-phonetic" class="font-mono text-slate-300 leading-normal whitespace-pre-wrap max-h-36 overflow-y-auto">
+                                                        <div id="email-phonetic" class="font-mono text-slate-300 leading-normal whitespace-pre-wrap max-h-48 overflow-y-auto">
                                                             Start typing an email...
                                                         </div>
                                                     </div>
@@ -354,7 +356,7 @@
                                     </div>
 
                                     <!-- dynamic computed flexible date ranges widget -->
-                                    <div id="flexible-days-output" class="hidden mb-4 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
+                                    <div id="flexible-days-output" class="hidden mt-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
                                         <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wide mb-1.5 flex items-center">
                                             <i class="ph ph-calendar text-xs mr-1"></i> Active Calendar Search Windows
                                         </div>
@@ -365,6 +367,68 @@
                                             <div id="flex-ret-window" class="text-xs text-slate-600 flex flex-wrap items-center gap-1.5 hidden">
                                                 <!-- Dynamic Date Tags -->
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-3 mt-4">
+                                        <!-- Airport Preferences -->
+                                        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <i class="ph ph-buildings text-blue-500 mr-2 text-lg"></i>
+                                                    <span class="text-sm font-medium text-slate-700">Specific Airport Preferences?</span>
+                                                </div>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" id="airport-toggle" class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                </label>
+                                            </div>
+                                            
+                                            <div id="airport-container" class="hidden mt-3 pt-3 border-t border-slate-200">
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label for="alt-departure" class="block text-xs font-medium text-slate-600 mb-1">Preferred Departure(s)</label>
+                                                        <input type="text" id="alt-departure" placeholder="e.g. JFK, EWR" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors uppercase">
+                                                    </div>
+                                                    <div>
+                                                        <label for="alt-arrival" class="block text-xs font-medium text-slate-600 mb-1">Preferred Arrival(s)</label>
+                                                        <input type="text" id="alt-arrival" placeholder="e.g. LHR, LGW" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors uppercase">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full border-t border-slate-100"></div>
+
+                                <!-- SECTION 4: Routing Preferences -->
+                                <div>
+                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">4. Routing Preferences</h3>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-xs font-medium text-slate-700 mb-2">Number of Stops <span class="text-red-500">*</span></label>
+                                        <div class="flex flex-wrap items-center gap-3">
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-flexible" name="stops" value="Flexible" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer" checked>
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">Flexible</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-nonstop" name="stops" value="Non-stop" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">Non-stop</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-1" name="stops" value="1 Stop" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">1 Stop</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-2" name="stops" value="2 Stops" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">2 Stops</span>
+                                            </label>
+                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                                <input type="radio" id="stop-3" name="stops" value="3 Stops" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                                <span class="ml-2 text-xs text-slate-700 font-medium">3 Stops</span>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -385,39 +449,6 @@
                                             <label for="layover-airport" class="block text-xs font-medium text-slate-600 mb-1">Preferred Connecting City / Airport Code(s)</label>
                                             <input type="text" id="layover-airport" placeholder="e.g. DXB, DOH, LHR, FRA (comma separated)" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors uppercase">
                                             <p class="text-[10px] text-slate-500 mt-1">Enter multiple codes separated by commas.</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="w-full border-t border-slate-100"></div>
-
-                                <!-- SECTION 4: Routing Preferences -->
-                                <div>
-                                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">4. Routing Preferences</h3>
-                                    
-                                    <div class="mb-2">
-                                        <label class="block text-xs font-medium text-slate-700 mb-2">Number of Stops <span class="text-red-500">*</span></label>
-                                        <div class="flex flex-wrap items-center gap-3">
-                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
-                                                <input type="radio" id="stop-flexible" name="stops" value="Flexible" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer" checked>
-                                                <span class="ml-2 text-xs text-slate-700 font-medium">Flexible</span>
-                                            </label>
-                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
-                                                <input type="radio" id="stop-nonstop" name="stops" value="Non-stop" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
-                                                <span class="ml-2 text-xs text-slate-700 font-medium">Non-stop</span>
-                                            </label>
-                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
-                                                <input type="radio" id="stop-1" name="stops" value="1 Stop" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
-                                                <span class="ml-2 text-xs text-slate-700 font-medium">1 Stop</span>
-                                            </label>
-                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
-                                                <input type="radio" id="stop-2" name="stops" value="2 Stops" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
-                                                <span class="ml-2 text-xs text-slate-700 font-medium">2 Stops</span>
-                                            </label>
-                                            <label class="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors">
-                                                <input type="radio" id="stop-3" name="stops" value="3 Stops" class="text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
-                                                <span class="ml-2 text-xs text-slate-700 font-medium">3 Stops</span>
-                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -754,6 +785,7 @@
             document.getElementById('trip-oneway').addEventListener('change', toggleTripType);
             document.getElementById('trip-round').addEventListener('change', toggleTripType);
             document.getElementById('layover-toggle').addEventListener('change', toggleLayoverField);
+            document.getElementById('airport-toggle').addEventListener('change', toggleAirportField);
             document.getElementById('date-flexibility').addEventListener('change', updateFlexibleDatesEngine);
 
             // Load saved data when the page loads
@@ -822,12 +854,12 @@
             // Force UI layout to match the loaded state
             toggleTripType();
             toggleLayoverField();
+            toggleAirportField();
             updateFlexibleDatesEngine();
             updateMilitarySpellings();
             generatePreview();
         }
 
-        // Dynamic Date Flexibility Engine
         // Helper to compute flexible search windows based on chosen target dates
         function computeDateOffsetWindow(baseDateStr, flexOption) {
             if (!baseDateStr) return null;
@@ -949,6 +981,21 @@
             saveFormData();
         }
 
+        function toggleAirportField() {
+            const toggle = document.getElementById('airport-toggle');
+            const container = document.getElementById('airport-container');
+            
+            if (toggle.checked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                document.getElementById('alt-departure').value = ''; 
+                document.getElementById('alt-arrival').value = ''; 
+            }
+            generatePreview();
+            saveFormData();
+        }
+
         // CORE ACTIONS
         function startNewLead() {
             document.getElementById('lead-form').reset();
@@ -965,6 +1012,7 @@
             
             toggleTripType();
             toggleLayoverField();
+            toggleAirportField();
             updateFlexibleDatesEngine();
             updateMilitarySpellings();
             generatePreview();
@@ -987,6 +1035,7 @@
             
             toggleTripType();
             toggleLayoverField();
+            toggleAirportField();
             updateFlexibleDatesEngine();
             updateMilitarySpellings();
             generatePreview();
@@ -1049,6 +1098,10 @@
             const stopsEle = document.querySelector('input[name="stops"]:checked');
             const stops = stopsEle ? stopsEle.value : 'Flexible';
             
+            const hasAltAirports = document.getElementById('airport-toggle').checked;
+            const altDeparture = document.getElementById('alt-departure').value.trim().toUpperCase();
+            const altArrival = document.getElementById('alt-arrival').value.trim().toUpperCase();
+
             const hasLayover = document.getElementById('layover-toggle').checked;
             const layoverAirport = document.getElementById('layover-airport').value.trim().toUpperCase();
             const notes = document.getElementById('notes').value.trim();
@@ -1102,7 +1155,15 @@
             } else {
                 output += `Date:  ${fmtDepart}${depRangeStr}\n`;
             }
-            output += `Flex:  ${dateFlexibility}\n\n`;
+            output += `Flex:  ${dateFlexibility}\n`;
+            
+            if (hasAltAirports && (altDeparture || altArrival)) {
+                output += `Alt. Pref: `;
+                if(altDeparture) output += `Dep: ${altDeparture} `;
+                if(altArrival) output += `Arr: ${altArrival}`;
+                output += `\n`;
+            }
+            output += `\n`;
             
             output += `[ROUTING PREFERENCES]\n`;
             output += `Stops:   ${stops}\n`;
